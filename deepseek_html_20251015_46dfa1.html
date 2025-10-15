@@ -1,0 +1,1115 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Математический тренажер | Math Trainer</title>
+    <style>
+        :root {
+            --primary: #4e54c8;
+            --secondary: #8f94fb;
+            --success: #4CAF50;
+            --danger: #f44336;
+            --warning: #ff9800;
+            --light: #f8f9fa;
+            --dark: #343a40;
+            --bg-color: #ffffff;
+            --text-color: #333333;
+            --card-bg: #f8f9fa;
+            --border-color: #e1e1e1;
+        }
+
+        [data-theme="dark"] {
+            --primary: #6c63ff;
+            --secondary: #8a85ff;
+            --success: #66bb6a;
+            --danger: #ef5350;
+            --warning: #ffa726;
+            --light: #424242;
+            --dark: #f5f5f5;
+            --bg-color: #121212;
+            --text-color: #e0e0e0;
+            --card-bg: #1e1e1e;
+            --border-color: #333333;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            transition: background-color 0.3s, color 0.3s, border-color 0.3s;
+        }
+        
+        body {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            color: var(--text-color);
+        }
+        
+        .container {
+            background-color: var(--bg-color);
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            width: 100%;
+            max-width: 900px;
+            overflow: hidden;
+            position: relative;
+        }
+        
+        header {
+            background: linear-gradient(to right, var(--primary), var(--secondary));
+            color: white;
+            padding: 20px;
+            text-align: center;
+            position: relative;
+        }
+        
+        .header-controls {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            display: flex;
+            gap: 10px;
+        }
+        
+        .control-btn {
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            color: white;
+            font-size: 1.2rem;
+            transition: all 0.3s;
+        }
+        
+        .control-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: scale(1.1);
+        }
+        
+        h1 {
+            font-size: 2.2rem;
+            margin-bottom: 10px;
+        }
+        
+        .subtitle {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+        
+        .content {
+            padding: 30px;
+        }
+        
+        .settings {
+            background-color: var(--card-bg);
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 25px;
+            border: 1px solid var(--border-color);
+        }
+        
+        .settings h2 {
+            color: var(--primary);
+            margin-bottom: 15px;
+            font-size: 1.5rem;
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+            color: var(--text-color);
+        }
+        
+        select, input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid var(--border-color);
+            border-radius: 10px;
+            font-size: 1rem;
+            transition: all 0.3s;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+        }
+        
+        select:focus, input:focus {
+            border-color: var(--primary);
+            outline: none;
+        }
+        
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .checkbox-group input {
+            width: auto;
+        }
+        
+        .btn {
+            background: linear-gradient(to right, var(--primary), var(--secondary));
+            color: white;
+            border: none;
+            padding: 14px 25px;
+            border-radius: 10px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            width: 100%;
+            margin-top: 10px;
+        }
+        
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .btn:active {
+            transform: translateY(0);
+        }
+        
+        .game-area {
+            display: none;
+            text-align: center;
+        }
+        
+        .stats {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            font-size: 1.1rem;
+            font-weight: 600;
+        }
+        
+        .problem {
+            background-color: var(--card-bg);
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 25px;
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--text-color);
+            border: 1px solid var(--border-color);
+            min-height: 150px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .answer-input {
+            font-size: 1.5rem;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        
+        .feedback {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 20px;
+            min-height: 30px;
+        }
+        
+        .correct {
+            color: var(--success);
+        }
+        
+        .incorrect {
+            color: var(--danger);
+        }
+        
+        .results {
+            display: none;
+            text-align: center;
+            padding: 20px;
+        }
+        
+        .results h2 {
+            color: var(--primary);
+            margin-bottom: 20px;
+        }
+        
+        .score {
+            font-size: 3rem;
+            font-weight: 700;
+            color: var(--primary);
+            margin: 20px 0;
+        }
+        
+        .progress-bar {
+            height: 10px;
+            background-color: var(--border-color);
+            border-radius: 5px;
+            margin: 20px 0;
+            overflow: hidden;
+        }
+        
+        .progress {
+            height: 100%;
+            background: linear-gradient(to right, var(--primary), var(--secondary));
+            width: 0%;
+            transition: width 0.5s;
+        }
+        
+        .timer {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--warning);
+        }
+        
+        .time-up {
+            color: var(--danger);
+            animation: pulse 1s infinite;
+        }
+        
+        .operations {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        
+        .operation-btn {
+            background-color: var(--card-bg);
+            border: 2px solid var(--border-color);
+            border-radius: 10px;
+            padding: 10px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            color: var(--text-color);
+        }
+        
+        .operation-btn.active {
+            background: linear-gradient(to right, var(--primary), var(--secondary));
+            color: white;
+            border-color: var(--primary);
+        }
+        
+        .complex-operations {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        
+        @media (max-width: 768px) {
+            .operations, .complex-operations {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .problem {
+                font-size: 2rem;
+                min-height: 120px;
+            }
+            
+            h1 {
+                font-size: 1.8rem;
+            }
+            
+            .header-controls {
+                position: static;
+                justify-content: center;
+                margin-top: 10px;
+            }
+        }
+        
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .fade-in {
+            animation: fadeIn 0.5s ease-out;
+        }
+        
+        .language-selector {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        
+        .lang-btn {
+            padding: 8px 15px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            background: var(--card-bg);
+            color: var(--text-color);
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .lang-btn.active {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1 id="app-title">Математический тренажер</h1>
+            <div class="subtitle" id="app-subtitle">Проверь свои знания от 1 до 12 класса!</div>
+            <div class="header-controls">
+                <button class="control-btn" id="theme-toggle" title="Переключить тему">🌓</button>
+                <button class="control-btn" id="sound-toggle" title="Включить/выключить звук">🔊</button>
+            </div>
+        </header>
+        
+        <div class="content">
+            <div class="language-selector">
+                <button class="lang-btn active" data-lang="ru">Русский</button>
+                <button class="lang-btn" data-lang="en">English</button>
+                <button class="lang-btn" data-lang="zh">中文</button>
+            </div>
+            
+            <div id="settings" class="settings">
+                <h2 id="settings-title">Настройки</h2>
+                
+                <div class="form-group">
+                    <label for="grade" id="grade-label">Выберите класс:</label>
+                    <select id="grade">
+                        <option value="1">1 класс</option>
+                        <option value="2">2 класс</option>
+                        <option value="3">3 класс</option>
+                        <option value="4">4 класс</option>
+                        <option value="5">5 класс</option>
+                        <option value="6">6 класс</option>
+                        <option value="7">7 класс</option>
+                        <option value="8">8 класс</option>
+                        <option value="9">9 класс</option>
+                        <option value="10">10 класс</option>
+                        <option value="11">11 класс</option>
+                        <option value="12">12 класс</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label id="operations-label">Выберите операции:</label>
+                    <div class="operations">
+                        <button class="operation-btn" data-operation="addition">+</button>
+                        <button class="operation-btn" data-operation="subtraction">-</button>
+                        <button class="operation-btn" data-operation="multiplication">×</button>
+                        <button class="operation-btn" data-operation="division">÷</button>
+                        <button class="operation-btn" data-operation="fractions">Дроби</button>
+                        <button class="operation-btn" data-operation="roots">√</button>
+                        <button class="operation-btn" data-operation="powers">x²</button>
+                        <button class="operation-btn active" data-operation="all">Все</button>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label id="complex-operations-label">Сложные операции:</label>
+                    <div class="complex-operations">
+                        <button class="operation-btn" data-operation="algebra">Алгебра</button>
+                        <button class="operation-btn" data-operation="geometry">Геометрия</button>
+                        <button class="operation-btn" data-operation="trigonometry">Тригонометрия</button>
+                        <button class="operation-btn" data-operation="logarithms">Логарифмы</button>
+                        <button class="operation-btn" data-operation="equations">Уравнения</button>
+                        <button class="operation-btn" data-operation="calculus">Матанализ</button>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <div class="checkbox-group">
+                        <input type="checkbox" id="timed">
+                        <label for="timed" id="timed-label">Режим на время (60 секунд)</label>
+                    </div>
+                </div>
+                
+                <button id="start-btn" class="btn">Начать тренировку</button>
+            </div>
+            
+            <div id="game" class="game-area">
+                <div class="stats">
+                    <div id="question-counter">Вопрос: <span id="question-number">1</span>/10</div>
+                    <div id="correct-counter">Правильно: <span id="correct-count">0</span></div>
+                    <div class="timer" id="timer">60</div>
+                </div>
+                
+                <div class="progress-bar">
+                    <div class="progress" id="progress"></div>
+                </div>
+                
+                <div class="problem" id="problem">5 + 3 = ?</div>
+                
+                <input type="text" class="answer-input" id="answer" placeholder="Введите ответ" autocomplete="off">
+                
+                <div class="feedback" id="feedback"></div>
+                
+                <button id="next-btn" class="btn">Следующий вопрос</button>
+            </div>
+            
+            <div id="results" class="results">
+                <h2 id="results-title">Результаты</h2>
+                <div class="score" id="final-score">8/10</div>
+                <div id="result-message">Отличный результат!</div>
+                <button id="restart-btn" class="btn">Начать заново</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Тексты для разных языков
+            const translations = {
+                ru: {
+                    appTitle: "Математический тренажер",
+                    appSubtitle: "Проверь свои знания от 1 до 12 класса!",
+                    settingsTitle: "Настройки",
+                    gradeLabel: "Выберите класс:",
+                    operationsLabel: "Выберите операции:",
+                    complexOperationsLabel: "Сложные операции:",
+                    timedLabel: "Режим на время (60 секунд)",
+                    startButton: "Начать тренировку",
+                    questionCounter: "Вопрос:",
+                    correctCounter: "Правильно:",
+                    nextButton: "Следующий вопрос",
+                    resultsTitle: "Результаты",
+                    restartButton: "Начать заново",
+                    correctFeedback: "Правильно! ✓",
+                    timeUp: "Время вышло!",
+                    resultMessages: {
+                        excellent: "Отличный результат! Вы математический гений!",
+                        good: "Хороший результат! Продолжайте в том же духе!",
+                        average: "Неплохо, но есть куда стремиться!",
+                        poor: "Попрактикуйтесь еще, и у вас все получится!"
+                    },
+                    operations: {
+                        addition: "+",
+                        subtraction: "-",
+                        multiplication: "×",
+                        division: "÷",
+                        fractions: "Дроби",
+                        roots: "√",
+                        powers: "x²",
+                        all: "Все",
+                        algebra: "Алгебра",
+                        geometry: "Геометрия",
+                        trigonometry: "Тригонометрия",
+                        logarithms: "Логарифмы",
+                        equations: "Уравнения",
+                        calculus: "Матанализ"
+                    }
+                },
+                en: {
+                    appTitle: "Math Trainer",
+                    appSubtitle: "Test your knowledge from 1st to 12th grade!",
+                    settingsTitle: "Settings",
+                    gradeLabel: "Select grade:",
+                    operationsLabel: "Select operations:",
+                    complexOperationsLabel: "Complex operations:",
+                    timedLabel: "Timed mode (60 seconds)",
+                    startButton: "Start Training",
+                    questionCounter: "Question:",
+                    correctCounter: "Correct:",
+                    nextButton: "Next Question",
+                    resultsTitle: "Results",
+                    restartButton: "Start Over",
+                    correctFeedback: "Correct! ✓",
+                    timeUp: "Time's up!",
+                    resultMessages: {
+                        excellent: "Excellent result! You're a math genius!",
+                        good: "Good result! Keep up the good work!",
+                        average: "Not bad, but there's room for improvement!",
+                        poor: "Practice more and you'll get better!"
+                    },
+                    operations: {
+                        addition: "+",
+                        subtraction: "-",
+                        multiplication: "×",
+                        division: "÷",
+                        fractions: "Fractions",
+                        roots: "√",
+                        powers: "x²",
+                        all: "All",
+                        algebra: "Algebra",
+                        geometry: "Geometry",
+                        trigonometry: "Trigonometry",
+                        logarithms: "Logarithms",
+                        equations: "Equations",
+                        calculus: "Calculus"
+                    }
+                },
+                zh: {
+                    appTitle: "数学训练器",
+                    appSubtitle: "测试你从1年级到12年级的知识！",
+                    settingsTitle: "设置",
+                    gradeLabel: "选择年级：",
+                    operationsLabel: "选择运算：",
+                    complexOperationsLabel: "复杂运算：",
+                    timedLabel: "计时模式（60秒）",
+                    startButton: "开始训练",
+                    questionCounter: "问题：",
+                    correctCounter: "正确：",
+                    nextButton: "下一个问题",
+                    resultsTitle: "结果",
+                    restartButton: "重新开始",
+                    correctFeedback: "正确！✓",
+                    timeUp: "时间到！",
+                    resultMessages: {
+                        excellent: "优秀的结果！你是数学天才！",
+                        good: "不错的结果！继续保持！",
+                        average: "还不错，但还有改进的空间！",
+                        poor: "多练习，你会变得更好！"
+                    },
+                    operations: {
+                        addition: "+",
+                        subtraction: "-",
+                        multiplication: "×",
+                        division: "÷",
+                        fractions: "分数",
+                        roots: "√",
+                        powers: "x²",
+                        all: "全部",
+                        algebra: "代数",
+                        geometry: "几何",
+                        trigonometry: "三角学",
+                        logarithms: "对数",
+                        equations: "方程",
+                        calculus: "微积分"
+                    }
+                }
+            };
+
+            // Элементы DOM
+            const settingsScreen = document.getElementById('settings');
+            const gameScreen = document.getElementById('game');
+            const resultsScreen = document.getElementById('results');
+            const startBtn = document.getElementById('start-btn');
+            const nextBtn = document.getElementById('next-btn');
+            const restartBtn = document.getElementById('restart-btn');
+            const gradeSelect = document.getElementById('grade');
+            const operationBtns = document.querySelectorAll('.operation-btn');
+            const timedCheckbox = document.getElementById('timed');
+            const problemElement = document.getElementById('problem');
+            const answerInput = document.getElementById('answer');
+            const feedbackElement = document.getElementById('feedback');
+            const questionNumberElement = document.getElementById('question-number');
+            const correctCountElement = document.getElementById('correct-count');
+            const timerElement = document.getElementById('timer');
+            const progressElement = document.getElementById('progress');
+            const finalScoreElement = document.getElementById('final-score');
+            const resultMessageElement = document.getElementById('result-message');
+            const themeToggle = document.getElementById('theme-toggle');
+            const soundToggle = document.getElementById('sound-toggle');
+            const langButtons = document.querySelectorAll('.lang-btn');
+            
+            // Элементы для перевода
+            const appTitle = document.getElementById('app-title');
+            const appSubtitle = document.getElementById('app-subtitle');
+            const settingsTitle = document.getElementById('settings-title');
+            const gradeLabel = document.getElementById('grade-label');
+            const operationsLabel = document.getElementById('operations-label');
+            const complexOperationsLabel = document.getElementById('complex-operations-label');
+            const timedLabel = document.getElementById('timed-label');
+            const questionCounter = document.getElementById('question-counter');
+            const correctCounter = document.getElementById('correct-counter');
+            const resultsTitle = document.getElementById('results-title');
+            
+            // Переменные игры
+            let currentQuestion = 0;
+            let correctAnswers = 0;
+            let totalQuestions = 10;
+            let timer;
+            let timeLeft = 60;
+            let selectedOperations = ['all'];
+            let currentProblem = {};
+            let currentLanguage = 'ru';
+            let soundEnabled = true;
+            
+            // Звуковые эффекты
+            const correctSound = new Audio("data:audio/wav;base64,UklGRigAAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABAAZGF0YQQAAAAAAA==");
+            const wrongSound = new Audio("data:audio/wav;base64,UklGRigAAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABAAZGF0YQQAAAAAAA==");
+            const clickSound = new Audio("data:audio/wav;base64,UklGRigAAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABAAZGF0YQQAAAAAAA==");
+            
+            // Инициализация
+            detectSystemPreferences();
+            setupEventListeners();
+            
+            // Функция определения системных предпочтений
+            function detectSystemPreferences() {
+                // Определение языка системы
+                const systemLanguage = navigator.language || navigator.userLanguage;
+                if (systemLanguage.startsWith('zh')) {
+                    currentLanguage = 'zh';
+                } else if (systemLanguage.startsWith('en')) {
+                    currentLanguage = 'en';
+                } else {
+                    currentLanguage = 'ru';
+                }
+                
+                // Определение темы системы
+                if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+                    document.documentElement.setAttribute('data-theme', 'dark');
+                    themeToggle.textContent = '🌞';
+                } else {
+                    document.documentElement.setAttribute('data-theme', 'light');
+                    themeToggle.textContent = '🌙';
+                }
+                
+                updateLanguage();
+                updateOperationButtons();
+            }
+            
+            // Настройка слушателей событий
+            function setupEventListeners() {
+                // Настройка операций
+                operationBtns.forEach(btn => {
+                    btn.addEventListener('click', function() {
+                        playSound(clickSound);
+                        const operation = this.getAttribute('data-operation');
+                        
+                        if (operation === 'all') {
+                            // Если выбрано "Все", снимаем выделение с других кнопок
+                            operationBtns.forEach(b => b.classList.remove('active'));
+                            this.classList.add('active');
+                            selectedOperations = ['all'];
+                        } else {
+                            // Убираем выделение с кнопки "Все"
+                            document.querySelector('[data-operation="all"]').classList.remove('active');
+                            
+                            if (this.classList.contains('active')) {
+                                this.classList.remove('active');
+                                selectedOperations = selectedOperations.filter(op => op !== operation);
+                                
+                                // Если ничего не выбрано, выбираем "Все"
+                                if (selectedOperations.length === 0) {
+                                    document.querySelector('[data-operation="all"]').classList.add('active');
+                                    selectedOperations = ['all'];
+                                }
+                            } else {
+                                this.classList.add('active');
+                                selectedOperations.push(operation);
+                            }
+                        }
+                    });
+                });
+                
+                // Начало игры
+                startBtn.addEventListener('click', startGame);
+                
+                // Следующий вопрос
+                nextBtn.addEventListener('click', nextQuestion);
+                
+                // Перезапуск игры
+                restartBtn.addEventListener('click', function() {
+                    playSound(clickSound);
+                    resultsScreen.style.display = 'none';
+                    settingsScreen.style.display = 'block';
+                });
+                
+                // Обработка ввода ответа
+                answerInput.addEventListener('keyup', function(event) {
+                    if (event.key === 'Enter') {
+                        checkAnswer();
+                    }
+                });
+                
+                // Переключение темы
+                themeToggle.addEventListener('click', function() {
+                    playSound(clickSound);
+                    if (document.documentElement.getAttribute('data-theme') === 'dark') {
+                        document.documentElement.setAttribute('data-theme', 'light');
+                        themeToggle.textContent = '🌙';
+                    } else {
+                        document.documentElement.setAttribute('data-theme', 'dark');
+                        themeToggle.textContent = '🌞';
+                    }
+                });
+                
+                // Переключение звука
+                soundToggle.addEventListener('click', function() {
+                    soundEnabled = !soundEnabled;
+                    soundToggle.textContent = soundEnabled ? '🔊' : '🔇';
+                    playSound(clickSound);
+                });
+                
+                // Смена языка
+                langButtons.forEach(btn => {
+                    btn.addEventListener('click', function() {
+                        playSound(clickSound);
+                        currentLanguage = this.getAttribute('data-lang');
+                        langButtons.forEach(b => b.classList.remove('active'));
+                        this.classList.add('active');
+                        updateLanguage();
+                        updateOperationButtons();
+                    });
+                });
+            }
+            
+            // Функция воспроизведения звука
+            function playSound(sound) {
+                if (soundEnabled) {
+                    sound.currentTime = 0;
+                    sound.play().catch(e => console.log("Audio play failed:", e));
+                }
+            }
+            
+            // Функция обновления языка интерфейса
+            function updateLanguage() {
+                const t = translations[currentLanguage];
+                
+                appTitle.textContent = t.appTitle;
+                appSubtitle.textContent = t.appSubtitle;
+                settingsTitle.textContent = t.settingsTitle;
+                gradeLabel.textContent = t.gradeLabel;
+                operationsLabel.textContent = t.operationsLabel;
+                complexOperationsLabel.textContent = t.complexOperationsLabel;
+                timedLabel.textContent = t.timedLabel;
+                startBtn.textContent = t.startButton;
+                questionCounter.textContent = t.questionCounter;
+                correctCounter.textContent = t.correctCounter;
+                nextBtn.textContent = t.nextButton;
+                resultsTitle.textContent = t.resultsTitle;
+                restartBtn.textContent = t.restartButton;
+                
+                // Обновление опций классов
+                for (let i = 1; i <= 12; i++) {
+                    const option = gradeSelect.querySelector(`option[value="${i}"]`);
+                    if (currentLanguage === 'en') {
+                        option.textContent = `Grade ${i}`;
+                    } else if (currentLanguage === 'zh') {
+                        option.textContent = `${i}年级`;
+                    } else {
+                        option.textContent = `${i} класс`;
+                    }
+                }
+            }
+            
+            // Функция обновления текста кнопок операций
+            function updateOperationButtons() {
+                const t = translations[currentLanguage].operations;
+                
+                operationBtns.forEach(btn => {
+                    const operation = btn.getAttribute('data-operation');
+                    if (t[operation]) {
+                        btn.textContent = t[operation];
+                    }
+                });
+            }
+            
+            // Функция начала игры
+            function startGame() {
+                playSound(clickSound);
+                settingsScreen.style.display = 'none';
+                gameScreen.style.display = 'block';
+                gameScreen.classList.add('fade-in');
+                
+                currentQuestion = 0;
+                correctAnswers = 0;
+                timeLeft = 60;
+                
+                updateStats();
+                generateProblem();
+                
+                // Запуск таймера, если выбран режим на время
+                if (timedCheckbox.checked) {
+                    timerElement.classList.remove('time-up');
+                    timerElement.style.display = 'block';
+                    startTimer();
+                } else {
+                    timerElement.style.display = 'none';
+                }
+            }
+            
+            // Функция запуска таймера
+            function startTimer() {
+                timerElement.textContent = timeLeft;
+                timer = setInterval(function() {
+                    timeLeft--;
+                    timerElement.textContent = timeLeft;
+                    
+                    if (timeLeft <= 10) {
+                        timerElement.classList.add('time-up');
+                    }
+                    
+                    if (timeLeft <= 0) {
+                        clearInterval(timer);
+                        endGame();
+                    }
+                }, 1000);
+            }
+            
+            // Функция генерации задачи
+            function generateProblem() {
+                const grade = parseInt(gradeSelect.value);
+                let operation;
+                
+                // Выбор операции
+                if (selectedOperations.includes('all')) {
+                    const operations = ['addition', 'subtraction', 'multiplication', 'division', 'fractions', 'roots', 'powers', 'algebra', 'geometry', 'trigonometry', 'logarithms', 'equations', 'calculus'];
+                    operation = operations[Math.floor(Math.random() * operations.length)];
+                } else {
+                    operation = selectedOperations[Math.floor(Math.random() * selectedOperations.length)];
+                }
+                
+                let a, b, c, problem, answer;
+                
+                // Генерация задачи в зависимости от класса и операции
+                switch(operation) {
+                    case 'addition':
+                        a = getRandomNumber(grade, operation);
+                        b = getRandomNumber(grade, operation);
+                        problem = `${a} + ${b} = ?`;
+                        answer = a + b;
+                        break;
+                        
+                    case 'subtraction':
+                        a = getRandomNumber(grade, operation);
+                        b = getRandomNumber(grade, operation);
+                        // Для вычитания убедимся, что результат положительный
+                        if (a < b) [a, b] = [b, a];
+                        problem = `${a} - ${b} = ?`;
+                        answer = a - b;
+                        break;
+                        
+                    case 'multiplication':
+                        a = getRandomNumber(grade, operation);
+                        b = getRandomNumber(grade, operation);
+                        problem = `${a} × ${b} = ?`;
+                        answer = a * b;
+                        break;
+                        
+                    case 'division':
+                        b = getRandomNumber(grade, operation, true); // делитель не должен быть 0
+                        a = b * getRandomNumber(grade, operation); // чтобы результат был целым
+                        problem = `${a} ÷ ${b} = ?`;
+                        answer = a / b;
+                        break;
+                        
+                    case 'fractions':
+                        const numerator = getRandomNumber(grade, operation);
+                        const denominator = getRandomNumber(grade, operation, true); // знаменатель не должен быть 0
+                        problem = `Дробь: ${numerator}/${denominator} = ?`;
+                        answer = (numerator / denominator).toFixed(2);
+                        break;
+                        
+                    case 'roots':
+                        a = getPerfectSquare(grade);
+                        problem = `√${a} = ?`;
+                        answer = Math.sqrt(a);
+                        break;
+                        
+                    case 'powers':
+                        a = getRandomNumber(grade, operation);
+                        b = getRandomNumber(2, 3); // степень от 2 до 3
+                        problem = `${a}² = ?`;
+                        answer = Math.pow(a, 2);
+                        break;
+                        
+                    case 'algebra':
+                        a = getRandomNumber(grade, operation);
+                        b = getRandomNumber(grade, operation);
+                        problem = `x + ${b} = ${a + b}, x = ?`;
+                        answer = a;
+                        break;
+                        
+                    case 'geometry':
+                        a = getRandomNumber(grade, operation);
+                        problem = `Площадь квадрата со стороной ${a} = ?`;
+                        answer = a * a;
+                        break;
+                        
+                    case 'trigonometry':
+                        const angle = getRandomNumber(0, 90);
+                        problem = `sin(${angle}°) ≈ ?`;
+                        answer = Math.sin(angle * Math.PI / 180).toFixed(2);
+                        break;
+                        
+                    case 'logarithms':
+                        a = getRandomNumber(2, 10);
+                        b = Math.pow(a, getRandomNumber(1, 3));
+                        problem = `log${a}(${b}) = ?`;
+                        answer = Math.log(b) / Math.log(a);
+                        break;
+                        
+                    case 'equations':
+                        a = getRandomNumber(grade, operation);
+                        b = getRandomNumber(grade, operation);
+                        c = a + b;
+                        problem = `${a}x + ${b} = ${c}, x = ?`;
+                        answer = 1;
+                        break;
+                        
+                    case 'calculus':
+                        a = getRandomNumber(grade, operation);
+                        problem = `Производная от ${a}x² = ?`;
+                        answer = 2 * a;
+                        break;
+                }
+                
+                currentProblem = {
+                    problem: problem,
+                    answer: answer
+                };
+                
+                problemElement.textContent = problem;
+                answerInput.value = '';
+                feedbackElement.textContent = '';
+                answerInput.focus();
+            }
+            
+            // Функция получения случайного числа в зависимости от класса
+            function getRandomNumber(grade, operation, noZero = false) {
+                let min, max;
+                
+                switch(grade) {
+                    case 1:
+                    case 2:
+                        min = 1;
+                        max = 10;
+                        break;
+                    case 3:
+                    case 4:
+                        min = 1;
+                        max = 20;
+                        break;
+                    case 5:
+                    case 6:
+                        min = 1;
+                        max = 50;
+                        break;
+                    case 7:
+                    case 8:
+                        min = 1;
+                        max = 100;
+                        break;
+                    case 9:
+                    case 10:
+                        min = 1;
+                        max = 200;
+                        break;
+                    case 11:
+                    case 12:
+                        min = 1;
+                        max = 500;
+                        break;
+                    default:
+                        min = 1;
+                        max = 10;
+                }
+                
+                // Для умножения и степеней используем меньшие числа
+                if (operation === 'multiplication' || operation === 'powers') {
+                    max = Math.min(max, 20);
+                }
+                
+                // Для дробей используем меньшие числа
+                if (operation === 'fractions') {
+                    max = Math.min(max, 10);
+                }
+                
+                let num = Math.floor(Math.random() * (max - min + 1)) + min;
+                
+                // Если нельзя ноль, убедимся, что число не равно 0
+                if (noZero && num === 0) {
+                    num = 1;
+                }
+                
+                return num;
+            }
+            
+            // Функция получения идеального квадрата для операций с корнями
+            function getPerfectSquare(grade) {
+                const maxRoot = grade < 5 ? 10 : grade < 9 ? 15 : 25;
+                const root = Math.floor(Math.random() * maxRoot) + 1;
+                return root * root;
+            }
+            
+            // Функция проверки ответа
+            function checkAnswer() {
+                const userAnswer = parseFloat(answerInput.value);
+                const correctAnswer = parseFloat(currentProblem.answer);
+                
+                // Допустимая погрешность для дробных ответов
+                const tolerance = 0.01;
+                
+                if (Math.abs(userAnswer - correctAnswer) < tolerance) {
+                    feedbackElement.textContent = translations[currentLanguage].correctFeedback;
+                    feedbackElement.className = 'feedback correct';
+                    correctAnswers++;
+                    correctCountElement.textContent = correctAnswers;
+                    playSound(correctSound);
+                } else {
+                    feedbackElement.textContent = `${translations[currentLanguage].resultMessages.average} ${translations[currentLanguage].correctFeedback.split('!')[0]}: ${currentProblem.answer}`;
+                    feedbackElement.className = 'feedback incorrect';
+                    playSound(wrongSound);
+                }
+                
+                // Автоматический переход к следующему вопросу через 1.5 секунды
+                setTimeout(nextQuestion, 1500);
+            }
+            
+            // Функция перехода к следующему вопросу
+            function nextQuestion() {
+                currentQuestion++;
+                updateStats();
+                
+                if (currentQuestion < totalQuestions) {
+                    generateProblem();
+                } else {
+                    endGame();
+                }
+            }
+            
+            // Функция обновления статистики
+            function updateStats() {
+                questionNumberElement.textContent = currentQuestion + 1;
+                progressElement.style.width = `${((currentQuestion) / totalQuestions) * 100}%`;
+            }
+            
+            // Функция завершения игры
+            function endGame() {
+                if (timedCheckbox.checked) {
+                    clearInterval(timer);
+                }
+                
+                gameScreen.style.display = 'none';
+                resultsScreen.style.display = 'block';
+                resultsScreen.classList.add('fade-in');
+                
+                finalScoreElement.textContent = `${correctAnswers}/${totalQuestions}`;
+                
+                // Сообщение в зависимости от результата
+                const percentage = (correctAnswers / totalQuestions) * 100;
+                const t = translations[currentLanguage];
+                
+                if (percentage >= 90) {
+                    resultMessageElement.textContent = t.resultMessages.excellent;
+                } else if (percentage >= 70) {
+                    resultMessageElement.textContent = t.resultMessages.good;
+                } else if (percentage >= 50) {
+                    resultMessageElement.textContent = t.resultMessages.average;
+                } else {
+                    resultMessageElement.textContent = t.resultMessages.poor;
+                }
+            }
+        });
+    </script>
+</body>
+</html>
